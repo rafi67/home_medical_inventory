@@ -1,5 +1,5 @@
-import HeroSection from "@/components/HeroSection/HeroSection";
-import FeaturesSection from "@/components/FeaturesSection";
+import HeroSection from "@/components/modules/HeroSection/HeroSection";
+import FeaturesSection from "@/components/modules/FeaturesSection/FeaturesSection";
 
 const LandingPage = () => {
   return (

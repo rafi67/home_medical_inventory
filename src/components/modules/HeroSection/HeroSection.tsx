@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { Activity, ArrowRight, CheckCircle2 } from "lucide-react";
-import { Card } from "../ui/card";
+import { Card } from "../../ui/card";
 
 const HeroSection = () => {
     return (

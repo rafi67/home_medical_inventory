@@ -7,8 +7,17 @@ import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
 import { Pill } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 
 const LoginPage = () => {
+
+    const router = useRouter()
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        router.push('/dashboard')
+    }
+
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4">
             <motion.div
@@ -42,7 +51,7 @@ const LoginPage = () => {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <form className="space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="email">Email</Label>
                                 <Input

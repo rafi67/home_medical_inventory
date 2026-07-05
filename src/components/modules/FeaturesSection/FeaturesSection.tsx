@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Bell, Pill, ShieldCheck } from "lucide-react";
-import { Card } from "./ui/card";
+import { Card } from "../../ui/card";
 
 const FeaturesSection = () => {
     return (
