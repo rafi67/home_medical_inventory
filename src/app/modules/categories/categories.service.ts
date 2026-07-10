@@ -26,8 +26,15 @@ const updateCategory = async (id: string, payload: Partial<ICategory>) => {
     return result;
 };
 
+const deleteCategory = async (id: string) => {
+    const result = await Categories.deleteOne({ id: id });
+
+    return result;
+}; 
+
 export const CategoryServices = {
     getAllCategories,
     createCategory,
     updateCategory,
+    deleteCategory,
 };
