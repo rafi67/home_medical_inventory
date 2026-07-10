@@ -13,8 +13,6 @@ const createCategory = catchAsync(async (req: NextRequest) => {
     const body = await req.json() as Partial<ICategory>;
     const result = await CategoryServices.createCategory(body);
 
-    console.log("request body:", req.body);
-
     return NextResponse.json(result);
 });
 

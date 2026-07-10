@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { v4 } from "uuid";
 import { ICategory } from "./categories.interface";
 import { Categories } from "./categories.model";
