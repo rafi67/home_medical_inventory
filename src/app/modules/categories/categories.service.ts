@@ -15,7 +15,19 @@ const createCategory = async (payload: Partial<ICategory>) => {
     return result;
 };
 
+const updateCategory = async (id: string, payload: Partial<ICategory>) => {
+    const filter = { id };
+    const update = {
+        name: payload.name,
+        description: payload.description,
+    };
+    const result = await Categories.findOneAndUpdate(filter, update);
+
+    return result;
+};
+
 export const CategoryServices = {
     getAllCategories,
     createCategory,
+    updateCategory,
 };

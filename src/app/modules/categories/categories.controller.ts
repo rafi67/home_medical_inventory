@@ -16,7 +16,16 @@ const createCategory = catchAsync(async (req: NextRequest) => {
     return NextResponse.json(result);
 });
 
+const updateCategory = catchAsync(async (req: NextRequest, id: string) => {
+    const body = await req.json() as Partial<ICategory>;
+
+    const result = await CategoryServices.updateCategory(id, body);
+
+    return NextResponse.json(result);
+});
+
 export const CategoryController = {
     getAllCategories,
     createCategory,
+    updateCategory,
 };

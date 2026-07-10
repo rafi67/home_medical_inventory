@@ -4,15 +4,13 @@ import { connectDB } from "@/lib/mongodb";
 import validateRequest from "@/shared/validateRequest";
 import { NextRequest } from "next/server";
 
-export async function GET() {
-    await connectDB();
-    return CategoryController.getAllCategories();
-}
 
-export async function POST(req: NextRequest) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     await connectDB();
 
-    await validateRequest(CategoryValidation.createCategoryZodSchema);
+    const { id } = await params;
 
-    return CategoryController.createCategory(req);
+    await validateRequest(CategoryValidation.updateCategoryZodSchema);
+
+    return CategoryController.updateCategory(req, id);
 }
