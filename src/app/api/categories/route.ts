@@ -5,3 +5,9 @@ export async function GET() {
     await connectDB();
     return CategoryController.getAllCategories();
 }
+
+export async function POST(req: Request) {
+    await connectDB();
+
+    return CategoryController.createCategory(req);
+}

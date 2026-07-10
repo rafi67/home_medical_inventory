@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { v4 } from "uuid";
+import { ICategory } from "./categories.interface";
 import { Categories } from "./categories.model";
 
 
@@ -6,6 +9,14 @@ const getAllCategories = async () => {
     return result;
 };
 
+const createCategory = async (payload: Partial<ICategory>) => {
+    const id: string = await v4();
+    payload.id = id;
+    const result = await Categories.create(payload);
+    return result;
+};
+
 export const CategoryServices = {
     getAllCategories,
+    createCategory,
 };

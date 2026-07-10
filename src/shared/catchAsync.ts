@@ -4,12 +4,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
 type AsyncHandler = (
-  req: NextRequest,
+  req?: NextRequest,
   context?: any
 ) => Promise<Response>;
 
 export function catchAsync(handler: AsyncHandler) {
-  return async (req: NextRequest, context?: any) => {
+  return async (req?: NextRequest, context?: any) => {
     try {
       return await handler(req, context);
     } catch (error: any) {

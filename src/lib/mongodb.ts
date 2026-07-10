@@ -10,5 +10,7 @@ export async function connectDB() {
 
     dns.setServers(['8.8.8.8', '8.8.4.4']); 
 
-    await mongoose.connect(db_url as string);
+    await mongoose.connect(db_url as string, {
+        dbName: "home_medicine_inventory"
+    });
 }
