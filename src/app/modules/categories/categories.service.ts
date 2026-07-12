@@ -21,7 +21,9 @@ const updateCategory = async (id: string, payload: Partial<ICategory>) => {
         name: payload.name,
         description: payload.description,
     };
-    const result = await Categories.findOneAndUpdate(filter, update);
+    const result = await Categories.findOneAndUpdate(filter, update, {
+        returnDocument: 'after',
+    });
 
     return result;
 };

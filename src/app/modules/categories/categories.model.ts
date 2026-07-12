@@ -26,4 +26,4 @@ export const categorySchema = new Schema<ICategory, CategoryModel>(
     },
 );
 
-export const Categories = models.Categories ||model<ICategory, CategoryModel>('Categories', categorySchema);
+export const Categories = models.Categories || model<ICategory, CategoryModel>('Categories', categorySchema);
