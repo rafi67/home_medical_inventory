@@ -46,11 +46,19 @@ const userSchema = new Schema<IUser, UserModel>(
     },
 );
 
-userSchema.statics.isUserExists = async function (id: string): Promise<Pick<IUser, 'id' | 'password' | 'role' | 'needsPasswordChange'> | null> {
-    return await User.findOne(
-        { id },
-        { id: 1, password: 1, role: 1, needsPasswordChange: 1 },
-    );
+userSchema.statics.isUserExists = async function (email?: string, id?: string): Promise<Pick<IUser, 'id' | 'password' | 'role' | 'needsPasswordChange'> | null> {
+    if(email) {
+        return await User.findOne(
+            { email },
+            { id: 1, email: 1, password: 1, role: 1, needsPasswordChange: 1 },
+        );
+    } else {
+        return await User.findOne(
+            { id },
+            { id: 1, email: 1, password: 1, role: 1, needsPasswordChange: 1 },
+        );
+    }
+    
 }
 
 userSchema.statics.isPasswordMatched = async function (
@@ -70,4 +78,4 @@ userSchema.pre('save', async function () {
     );
 });
 
-export const User = models.User || model<IUser, UserModel>('User', userSchema);
+export const User = models.User as UserModel || model<IUser, UserModel>('User', userSchema);
