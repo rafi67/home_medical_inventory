@@ -25,8 +25,15 @@ const updateUser = catchAsync(async (req: NextRequest, id: string) => {
     return NextResponse.json(result);
 });
 
+const deleteUser = catchAsync(async (_req: NextRequest, id: tring) => {
+    const result = await UserServices.deleteUser(id);
+    
+    return NextResponse.json(result);
+});
+
 export const UsersController = {
     getUserById,
     createUser,
     updateUser,
+    deleteUser,
 };

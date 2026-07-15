@@ -1,4 +1,3 @@
-import { v4 } from "uuid";
 import { ICategory } from "./categories.interface";
 import { Categories } from "./categories.model";
 
@@ -9,19 +8,17 @@ const getAllCategories = async () => {
 };
 
 const createCategory = async (payload: Partial<ICategory>) => {
-    const id: string = await v4();
-    payload.id = id;
     const result = await Categories.create(payload);
     return result;
 };
 
 const updateCategory = async (id: string, payload: Partial<ICategory>) => {
-    const filter = { id };
     const update = {
         name: payload.name,
         description: payload.description,
     };
-    const result = await Categories.findOneAndUpdate(filter, update, {
+    
+    const result = await Categories.findByIdAndUpdate(id, update, {
         returnDocument: 'after',
     });
 
@@ -29,7 +26,7 @@ const updateCategory = async (id: string, payload: Partial<ICategory>) => {
 };
 
 const deleteCategory = async (id: string) => {
-    const result = await Categories.deleteOne({ id: id });
+    const result = await Categories.findByIdAndDelete(id);
 
     return result;
 }; 

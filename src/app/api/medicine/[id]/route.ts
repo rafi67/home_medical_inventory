@@ -1,25 +1,27 @@
-import { UsersController } from "@/app/modules/users/users.controller";
-import { UserValidation } from "@/app/modules/users/users.validation";
+import { MedicineController } from "@/app/modules/medicine/medicine.controller";
+import { MedicineValidation } from "@/app/modules/medicine/medicine.validation";
 import { connectDB } from "@/lib/mongodb";
 import validateRequest from "@/shared/validateRequest";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     await connectDB();
-
+    
     const { id } = await params;
 
-    return UsersController.getUserById(req, id);
+    await validateRequest(MedicineValidation.createMedicineZodSchema);
+
+    return MedicineController.getMedicinesById(req, id);
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     await connectDB();
 
-    await validateRequest(UserValidation.updateUserZodSchema);
-
     const { id } = await params;
 
-    return UsersController.updateUser(req, id);
+    await validateRequest(MedicineValidation.updateMedicineZodSchema);
+
+    return MedicineController.updateMedicine(req, id);
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -27,5 +29,5 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
     const { id } = await params;
 
-    return UsersController.deleteUser(req, id);
+    return MedicineController.deleteMedicine(req, id);
 }

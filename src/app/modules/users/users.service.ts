@@ -11,30 +11,26 @@ const getUserById = async (id: string) => {
 const createUser = async (user: IUser) => {
     const id = await v4();
     user.id = 'U-'+id;
-    user.role = 'USER';
 
     const result = await User.create(user);
 
-    return result;
-};
-
-
-const createAdmin = async (user: IUser) => {
-    const id = await v4();
-    user.id = 'A-'+id;
-    user.role = 'ADMIN';
-
-    const result = await User.create(user);
+    result.password = "";
 
     return result;
 };
 
 const updateUser = async (id: string, user: IUser) => {
     const filter = { id };
-
-    const result = User.findOneAndUpdate(filter, user, {
+    const result = await User.
+    findOneAndUpdate(filter, user, {
         returnDocument: 'after',
     });
+
+    return result;
+};
+
+const deleteUser = async (id: string) => {
+    const result = await User.findOneAndDelete({ id });
 
     return result;
 };
@@ -43,4 +39,5 @@ export const UserServices = {
     getUserById,
     createUser,
     updateUser,
+    deleteUser,
 };

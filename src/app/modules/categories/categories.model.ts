@@ -4,11 +4,6 @@ import { CategoryModel, ICategory } from "./categories.interface";
 
 export const categorySchema = new Schema<ICategory, CategoryModel>(
     {
-        id: {
-            type: String,
-            required: true,
-            unique: true,
-        },
         name: {
             type: String,
             required: true,
@@ -26,4 +21,4 @@ export const categorySchema = new Schema<ICategory, CategoryModel>(
     },
 );
 
-export const Categories = models.Categories || model<ICategory, CategoryModel>('Categories', categorySchema);
+export const Categories = models.Categories as CategoryModel || model<ICategory, CategoryModel>('Categories', categorySchema);

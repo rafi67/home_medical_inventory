@@ -2,7 +2,6 @@ import { catchAsync } from "@/shared/catchAsync";
 import { RequestHandler } from "next/dist/server/next";
 import { NextRequest, NextResponse } from "next/server";
 import { AuthService } from "./auth.service";
-import { JwtPayload } from "jsonwebtoken";
 
 const loginUser: RequestHandler = catchAsync(async (req: NextRequest) => {
     const { ...loginData } = await req.json();
