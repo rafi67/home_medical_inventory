@@ -5,7 +5,9 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
-import { useState } from "react";
+import { useActionState, useEffect, useState } from "react";
+import { loginUser } from "@/services/auth/loginUser";
+import { toast } from "sonner";
 
 interface AddMedicineModalProps {
     isOpen: boolean
@@ -14,36 +16,24 @@ interface AddMedicineModalProps {
 }
 
 const AddMedicineModal = ({ isOpen, onClose, onAdd }: AddMedicineModalProps) => {
-    const [formData, setFormData] = useState({
-        name: '',
-        dosage: '',
-        quantity: 1,
-        unit: 'tablets',
-        expiryDate: '',
-        category: CATEGORIES[0],
-        notes: '',
-    })
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-        onAdd(formData)
-        setFormData({
-            name: '',
-            dosage: '',
-            quantity: 1,
-            unit: 'tablets',
-            expiryDate: '',
-            category: CATEGORIES[0],
-            notes: '',
-        })
-        onClose()
-    }
+
+    const [state, formAction, isPending] = useActionState(loginUser, null);
+
+    useEffect(() => {
+        if (state && !state.success && state.message) {
+            toast.error(state.message);
+        }
+    }, [state]);
+
+
+
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>Add Medicine</DialogTitle>
                 </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4 py-4">
+                <form action={formAction} className="space-y-4 py-4">
                     <div className="space-y-2">
                         <Label htmlFor="name">Medicine Name *</Label>
                         <Input

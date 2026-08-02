@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useMemo, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import React, { useEffect, useMemo, useState } from 'react'
+import { AnimatePresence } from 'framer-motion'
 import {
   Pill,
   Plus,
@@ -24,6 +24,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import AddMedicineModal from '@/components/AddMedicineModal'
+import { usePathname, useRouter } from 'next/navigation';
 type NotificationTone = 'expired' | 'expiringSoon' | 'lowStock' | 'outOfStock'
 interface AppNotification {
   id: string
@@ -55,7 +56,8 @@ const DashboardPage = () => {
         selectedCategory === 'All' || med.category === selectedCategory
       return matchesSearch && matchesCategory
     })
-  }, [medicines, searchQuery, selectedCategory])
+  }, [medicines, searchQuery, selectedCategory]);
+
   const stats = useMemo(() => {
     const now = new Date()
     const thirtyDaysFromNow = new Date()
@@ -71,7 +73,8 @@ const DashboardPage = () => {
       }).length,
       expired: medicines.filter((m) => new Date(m.expiryDate) < now).length,
     }
-  }, [medicines])
+  }, [medicines]);
+
   const notifications = useMemo<AppNotification[]>(() => {
     const now = new Date()
     const thirtyDaysFromNow = new Date()
@@ -125,7 +128,8 @@ const DashboardPage = () => {
       lowStock: 3,
     }
     return items.sort((a, b) => priority[a.tone] - priority[b.tone])
-  }, [medicines])
+  }, [medicines]);
+
   const notificationStyles: Record<
     NotificationTone,
     {
@@ -149,7 +153,8 @@ const DashboardPage = () => {
       icon: <AlertTriangle className="w-4 h-4 text-amber-600" />,
       bg: 'bg-amber-50',
     },
-  }
+  };
+
   const getStatusBadge = (med: Medicine) => {
     const expDate = new Date(med.expiryDate)
     const now = new Date()
@@ -191,7 +196,15 @@ const DashboardPage = () => {
         Good
       </Badge>
     )
-  }
+  };
+
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    router.replace(pathname);
+  }, [router, pathname]);
+  
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
       {/* Top Navigation */}

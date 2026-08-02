@@ -4,19 +4,23 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { loginUser } from "@/services/auth/loginUser";
 import { motion } from "framer-motion";
 import { Pill } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useActionState, useEffect } from "react";
+import { Toaster } from "sonner";
+import { toast } from "sonner";
 
 
 const LoginPage = () => {
+    const [state, formAction, isPeding] = useActionState(loginUser, null); 
 
-    const router = useRouter()
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        router.push('/dashboard')
-    }
+    useEffect(() => {
+        if (state && !state.success && state.message) {
+            process.env.NODE_ENV === "development" ? toast.error(state.message) : toast.error("Failed to login");
+        }
+    }, [state]);
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4">
@@ -51,12 +55,14 @@ const LoginPage = () => {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={handleSubmit} className="space-y-4">
+                        <form action={formAction} className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="email"
+                                >Email</Label>
                                 <Input
                                     id="email"
                                     type="email"
+                                    name="email"
                                     placeholder="m@example.com"
                                     required
                                 />
@@ -71,7 +77,7 @@ const LoginPage = () => {
                                         Forgot password?
                                     </Link>
                                 </div>
-                                <Input id="password" type="password" required />
+                                <Input id="password" name="password" type="password" required />
                             </div>
                             <Button
                                 type="submit"
@@ -79,6 +85,7 @@ const LoginPage = () => {
                             >
                                 Sign In
                             </Button>
+                            <Toaster />
                         </form>
                     </CardContent>
                     <CardFooter className="flex flex-col space-y-4">
