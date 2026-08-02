@@ -44,7 +44,7 @@ const HeroSection = () => {
             family's health essentials in one place.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Link href="/register">
+            <Link href="/dashboard">
               <Button
                 size="lg"
                 className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 rounded-full text-base h-12 px-8 shadow-lg shadow-teal-600/25"
