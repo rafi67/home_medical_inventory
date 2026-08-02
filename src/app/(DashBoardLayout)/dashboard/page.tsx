@@ -25,6 +25,7 @@ import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import AddMedicineModal from '@/components/AddMedicineModal'
 import { usePathname, useRouter } from 'next/navigation';
+import ProfileDropdownMenu from '@/components/ProfileDropdownMenu';
 type NotificationTone = 'expired' | 'expiringSoon' | 'lowStock' | 'outOfStock'
 interface AppNotification {
   id: string
@@ -201,6 +202,8 @@ const DashboardPage = () => {
   const router = useRouter();
   const pathname = usePathname();
 
+  const [isOpen, setIsOpen] = useState(false);
+
   useEffect(() => {
     router.replace(pathname);
   }, [router, pathname]);
@@ -288,11 +291,10 @@ const DashboardPage = () => {
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
-            <div className="w-8 h-8 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center font-semibold text-sm">
-              JD
-            </div>
+            <ProfileDropdownMenu open={isOpen}/>
           </div>
         </div>
+        
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
