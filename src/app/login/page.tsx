@@ -14,7 +14,7 @@ import { toast } from "sonner";
 
 
 const LoginPage = () => {
-    const [state, formAction, isPeding] = useActionState(loginUser, null); 
+    const [state, formAction, isPending] = useActionState(loginUser, null);
 
     useEffect(() => {
         if (state && !state.success && state.message) {
@@ -82,6 +82,7 @@ const LoginPage = () => {
                             <Button
                                 type="submit"
                                 className="w-full bg-teal-600 hover:bg-teal-700"
+                                disabled={isPending}
                             >
                                 Sign In
                             </Button>

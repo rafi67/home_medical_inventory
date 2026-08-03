@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Pill } from "lucide-react";
 import Link from "next/link";
+import { getCookie } from "@/services/auth/tokenHandlers";
 
-const CommonLayout = ({ children }: { children: React.ReactNode }) => {
+const CommonLayout = async ({ children }: { children: React.ReactNode }) => {
+    const accessToken = await getCookie('accessToken');
+
     return (
         <div className="min-h-screen bg-background font-sans selection:bg-teal-100 selection:text-teal-900">
             <nav className="fixed top-0 left-0 right-0 bg-background/80 backdrop-blur-md z-40 border-b">
@@ -14,19 +17,25 @@ const CommonLayout = ({ children }: { children: React.ReactNode }) => {
                         </span>
                     </div>
                     <div className="flex items-center gap-4">
-                        <Link href="/login">
-                            <Button
-                                variant="ghost"
-                                className="text-muted-foreground hover:text-foreground"
-                            >
-                                Sign In
-                            </Button>
-                        </Link>
-                        <Link href="/register">
-                            <Button className="bg-teal-600 hover:bg-teal-700 rounded-full shadow-sm shadow-teal-600/20">
-                                Get Started
-                            </Button>
-                        </Link>
+                        {
+                            !accessToken &&
+                            <>
+                                <Link href="/login">
+                                    <Button
+                                        variant="ghost"
+                                        className="text-muted-foreground hover:text-foreground"
+                                    >
+                                        Sign In
+                                    </Button>
+                                </Link>
+
+                                <Link href="/register">
+                                    <Button className="bg-teal-600 hover:bg-teal-700 rounded-full shadow-sm shadow-teal-600/20">
+                                        Get Started
+                                    </Button>
+                                </Link>
+                            </>
+                        }
                     </div>
                 </div>
             </nav>
