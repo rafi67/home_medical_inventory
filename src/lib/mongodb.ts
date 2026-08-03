@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-// import dns from "dns";
+import dns from "dns";
 
 const db_url = process.env.DB_URL;
 
@@ -8,7 +8,7 @@ export async function connectDB() {
         return;
     }
 
-    // dns.setServers(['8.8.8.8', '8.8.4.4']); 
+    dns.setServers(['8.8.8.8', '8.8.4.4']); 
 
     await mongoose.connect(db_url as string, {
         dbName: "home_medicine_inventory"

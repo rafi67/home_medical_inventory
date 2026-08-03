@@ -78,7 +78,7 @@ const LoginPage = () => {
                                         Forgot password?
                                     </Link>
                                 </div>
-                                <Input id="password" name="password" type="password" required />
+                                <Input id="password" placeholder="password" name="password" type="password" required />
                             </div>
                             <Button
                                 type="submit"
