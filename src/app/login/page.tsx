@@ -18,7 +18,8 @@ const LoginPage = () => {
 
     useEffect(() => {
         if (state && !state.success && state.message) {
-            process.env.NODE_ENV === "development" ? toast.error(state.message) : toast.error("Failed to login");
+            const errorMessage = process.env.NODE_ENV === "development" ? state.message : "Failed to login";
+            toast.error(errorMessage);
         }
     }, [state]);
 
@@ -84,7 +85,12 @@ const LoginPage = () => {
                                 className="w-full bg-teal-600 hover:bg-teal-700"
                                 disabled={isPending}
                             >
-                                Sign In
+                                {
+                                    isPending ?
+                                        'Signing....'
+                                        :
+                                        'Sign In'
+                                }
                             </Button>
                             <Toaster />
                         </form>
