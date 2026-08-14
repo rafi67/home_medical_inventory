@@ -202,8 +202,6 @@ const DashboardPage = () => {
   const router = useRouter();
   const pathname = usePathname();
 
-  const [isOpen, setIsOpen] = useState(false);
-
   useEffect(() => {
     router.replace(pathname);
   }, [router, pathname]);
@@ -291,7 +289,7 @@ const DashboardPage = () => {
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
-            <ProfileDropdownMenu open={isOpen}/>
+            <ProfileDropdownMenu/>
           </div>
         </div>
         

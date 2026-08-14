@@ -2,6 +2,18 @@ import { catchAsync } from "@/shared/catchAsync";
 import { NextRequest, NextResponse } from "next/server";
 import { MedicineService } from "./medicine.service";
 import { IMedicine } from "./medicine.interface";
+import { JwtPayload } from "jsonwebtoken";
+import { jwtHelpers } from "@/helpers/jwtHelpers";
+
+const getAllMedicines = catchAsync(async (_req: NextRequest, token: string) => {
+    const verifiedToken: JwtPayload | string = jwtHelpers.verifyToken(token, process.env.JWT_SECRET as string);
+
+    const result = await MedicineService.getAllMedicines(verifiedToken.id);
+
+    console.log(result);
+
+    return NextResponse.json(result);
+});
 
 const getMedicinesById = catchAsync(async (_req: NextRequest, id: string) => {
     const result = await MedicineService.getMedicinesById(id);
@@ -33,6 +45,7 @@ const deleteMedicine = catchAsync(async (_req: NextRequest, id: string) => {
 
 
 export const MedicineController = {
+    getAllMedicines,
     getMedicinesById,
     createMedicine,
     updateMedicine,

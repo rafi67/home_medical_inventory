@@ -7,13 +7,33 @@ const getMedicinesById = async (id: string) => {
         { id: id },
     ).populate('category');
 
-    const total = await Medicine.countDocuments({ id: id });
+    return result;
+};
+
+const getAllMedicines = async (id: string) => {
+    const result = await Medicine.find({userId: id}).populate('category');
+    const total = await Medicine.countDocuments({userId: id});
+    const lowStock = await Medicine.countDocuments({
+        $and: [
+            { userId: id },
+            { currentQuantity: { $lt: 4 } },
+        ]
+    });
+    
+    const expired = await Medicine.countDocuments({
+        $and: [
+            { userId: id },
+            { expiryDate: { $gte: new Date() } },
+        ]
+    });
 
     return {
-        total,
         data: result,
-    };
-};
+        total,
+        lowStock,
+        expired,
+    }
+}
 
 const createMedicine = async (payload: IMedicine) => {
     const id = await v4();
@@ -41,6 +61,7 @@ const deleteMedicine = async(id: string) => {
 }
 
 export const MedicineService = {
+    getAllMedicines,
     getMedicinesById,
     createMedicine,
     updateMedicine,
