@@ -10,7 +10,7 @@ const getAllMedicines = catchAsync(async (_req: NextRequest, token: string) => {
 
     const result = await MedicineService.getAllMedicines(verifiedToken.id);
 
-    console.log(result);
+    console.log(NextResponse.json(result));
 
     return NextResponse.json(result);
 });

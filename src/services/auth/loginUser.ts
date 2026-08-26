@@ -14,7 +14,7 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
     try{
         const redirectTo = "/dashboard";
         let accessTokenObject: null | any = null;
-        let refreshTokenObject: null | any;
+        let refreshTokenObject: null | any = null;
 
         const payload = {
             email: formData.get('email'),
@@ -32,8 +32,7 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
         const res = await serverFetch.post("/api/auth/login", {
             body: JSON.stringify(validatedPayload.data),
             headers: {
-                "Content-Type":
-                "application/json",
+                "Content-Type": "application/json",
             },
         });
 

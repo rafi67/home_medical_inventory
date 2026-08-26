@@ -26,6 +26,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AddMedicineModal from '@/components/AddMedicineModal'
 import { usePathname, useRouter } from 'next/navigation';
 import ProfileDropdownMenu from '@/components/ProfileDropdownMenu';
+import { serverFetch } from '@/lib/server-fetch';
 type NotificationTone = 'expired' | 'expiringSoon' | 'lowStock' | 'outOfStock'
 interface AppNotification {
   id: string
@@ -202,10 +203,21 @@ const DashboardPage = () => {
   const router = useRouter();
   const pathname = usePathname();
 
+  const [data, setData] = useState(null);
+
   useEffect(() => {
     router.replace(pathname);
+
+    async function fetchData() {
+      const res = await serverFetch.get('/api/medicine');
+      const body = await res.json();
+      console.log(body);
+      setData(body);
+    }
+
+    fetchData();
   }, [router, pathname]);
-  
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
       {/* Top Navigation */}
@@ -289,10 +301,10 @@ const DashboardPage = () => {
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
-            <ProfileDropdownMenu/>
+            <ProfileDropdownMenu />
           </div>
         </div>
-        
+
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -323,7 +335,7 @@ const DashboardPage = () => {
                 <h3 className="font-medium text-sm">Total Items</h3>
               </div>
               <p className="text-3xl font-bold text-foreground">
-                {stats.total}
+                {data?.total || 0}
               </p>
             </CardContent>
           </Card>
@@ -334,7 +346,7 @@ const DashboardPage = () => {
                 <h3 className="font-medium text-sm">Low Stock</h3>
               </div>
               <p className="text-3xl font-bold text-foreground">
-                {stats.lowStock}
+                {data?.lowStock || 0}
               </p>
             </CardContent>
           </Card>
@@ -345,7 +357,7 @@ const DashboardPage = () => {
                 <h3 className="font-medium text-sm">Expired</h3>
               </div>
               <p className="text-3xl font-bold text-foreground">
-                {stats.expired}
+                {data?.expired || 0}
               </p>
             </CardContent>
           </Card>
@@ -356,7 +368,7 @@ const DashboardPage = () => {
                 <h3 className="font-medium text-sm">Expiring Soon</h3>
               </div>
               <p className="text-3xl font-bold text-foreground">
-                {stats.expiringSoon}
+                {data?.expiringSoon || 0}
               </p>
             </CardContent>
           </Card>

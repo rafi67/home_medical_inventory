@@ -27,10 +27,25 @@ const getAllMedicines = async (id: string) => {
         ]
     });
 
+    const currentDate = new Date();
+    currentDate.setDate(currentDate.getDate()+7);
+
+    const expiringSoon = await Medicine.countDocuments({
+        $and: [
+            { userId: id },
+            { expiryDate: { 
+                $gte: currentDate,
+                $lte: new Date(),
+             }, 
+            },
+        ]
+    });
+
     return {
         data: result,
         total,
         lowStock,
+        expiringSoon,
         expired,
     }
 }
