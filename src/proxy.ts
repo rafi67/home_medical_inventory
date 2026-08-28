@@ -19,6 +19,13 @@ export async function proxy(request: NextRequest) {
     const authHeader = request.headers.get('authorization');
     const isApiRoute = request.nextUrl.pathname.startsWith('/api');
 
+    console.log('AccessToken', accessToken, 'pathname:', pathname);
+    console.log('authorization:', authHeader);
+
+    if(pathname.startsWith('/register') && accessToken) {
+     return NextResponse.redirect(new URL('/', request.url));
+    }
+
     if((!authHeader && isApiRoute) || pathname === '/') {
       return NextResponse.next();
     }
