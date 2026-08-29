@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { serverFetch } from "./lib/server-fetch";
 import { jwtHelpers } from "./helpers/jwtHelpers";
 
+
 function isTokenExpired(token: string) {
  try{
   jwtHelpers.verifyToken(token, process.env.JWT_SECRET as string);
@@ -18,16 +19,19 @@ export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
     const authHeader = request.headers.get('authorization');
     const isApiRoute = request.nextUrl.pathname.startsWith('/api');
-
-    console.log('AccessToken', accessToken, 'pathname:', pathname);
-    console.log('authorization:', authHeader);
-
-    if(pathname.startsWith('/register') && accessToken) {
-     return NextResponse.redirect(new URL('/', request.url));
-    }
+    // const method = request.method;
 
     if((!authHeader && isApiRoute) || pathname === '/') {
       return NextResponse.next();
+    }
+
+    if((pathname === '/register' || pathname ==='/login') && !accessToken) {
+      console.log('condition is true');
+      return NextResponse.next();
+    }
+
+    if(pathname === '/register' || pathname === '/login' && accessToken) {
+     return NextResponse.redirect(new URL('/', request.url));
     }
 
     if(!accessToken && !refreshToken && pathname!=='/login') {

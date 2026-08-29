@@ -4,11 +4,24 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { registerUser } from "@/services/auth/registerUser";
 import { motion } from "framer-motion";
 import { Pill } from "lucide-react";
 import Link from "next/link";
+import { useActionState, useEffect } from "react";
+import { toast } from "sonner";
 
 const RegisterPage = () => {
+    const [state, formAction, isPending] = useActionState(registerUser, null);
+
+    useEffect(() => {
+        if (state && !state.success && state.message) {
+            const errorMessage = process.env.NODE_ENV === "development" ? state.message : "Failed to register";
+            toast.error(errorMessage);
+        }
+    }, [state]);
+
+
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4">
             <motion.div
@@ -44,33 +57,41 @@ const RegisterPage = () => {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <form className="space-y-4">
+                        <form action={formAction} className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="name">Full Name</Label>
-                                <Input id="name" placeholder="John Doe" required />
+                                <Input id="name"
+                                    name="name" placeholder="John Doe" required />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="email">Email</Label>
                                 <Input
                                     id="email"
                                     type="email"
+                                    name="email"
                                     placeholder="m@example.com"
                                     required
                                 />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="password">Password</Label>
-                                <Input id="password" type="password" required />
+                                <Input id="password" name="password" type="password" placeholder="Password" required />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="confirm-password">Confirm Password</Label>
-                                <Input id="confirm-password" type="password" required />
+                                <Input id="confirm-password" placeholder="Confirm Password" name="confirmPassword" type="password" required />
                             </div>
                             <Button
                                 type="submit"
                                 className="w-full bg-teal-600 hover:bg-teal-700"
+                                disabled={isPending}
                             >
-                                Sign Up
+                                {
+                                    isPending ?
+                                    'Signing Up...'
+                                    :
+                                    'Sign Up'
+                                }
                             </Button>
                         </form>
                     </CardContent>

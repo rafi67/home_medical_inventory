@@ -11,6 +11,7 @@ const getUserById = async (id: string) => {
 const createUser = async (user: IUser) => {
     const id = await v4();
     user.id = 'U-'+id;
+    user.photoUrl = "";
 
     const result = await User.create(user);
 

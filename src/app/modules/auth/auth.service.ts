@@ -1,10 +1,12 @@
 import { ApiError } from "@/error/error";
 import { User } from "../users/users.model";
-import { IChangePassword, ILoginUser, ILoginUserResponse, IRefreshTokenResponse } from "./auth.interface";
+import { IChangePassword, ILoginUser, ILoginUserResponse, IRefreshTokenResponse, IRegisterUser } from "./auth.interface";
 import httpStatus from "http-status";
 import { jwtHelpers } from "@/helpers/jwtHelpers";
 import { Secret } from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { UserServices } from "../users/users.service";
+import { IUser } from "../users/users.interface";
 
 
 const loginUser = async(payload: ILoginUser): Promise<ILoginUserResponse> => {
@@ -84,6 +86,58 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
     };
 };
 
+const registerUser = async (payload: IRegisterUser): Promise<ILoginUserResponse> => {
+    const { name, email, password, confirmPassword } = payload;
+
+    const isUserExists = await User.isUserExists(email, undefined);
+
+    if(isUserExists) {
+        throw new ApiError("User Exists", httpStatus.CONFLICT);
+    }
+
+    if(password!==confirmPassword) {
+        throw new ApiError("Wrong Password", httpStatus.BAD_REQUEST);
+    }
+
+    const newUser = {
+        name,
+        role: 'USER',
+        email,
+        password,
+        needsPasswordChange: true,
+    }
+
+    const createUser = await UserServices.createUser(newUser as IUser);
+
+    const accessToken = jwtHelpers.createToken(
+        {
+            id: createUser.id,
+            role: createUser.role,
+        },
+        process.env.JWT_SECRET as Secret,
+        {
+            expiresIn: process.env.JWT_EXPIRES_IN,
+        },
+    );
+
+    const refreshToken = jwtHelpers.createToken(
+        {
+            id: createUser.id,
+            role: createUser.role,
+        },
+        process.env.JWT_REFRESH_SECRET as Secret,
+        {
+            expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
+        },
+    );
+
+    return {
+        accessToken,
+        refreshToken,
+        needsPasswordChange: createUser.needsPasswordChange,
+    };
+}; 
+
 const changePassword = async (
     token: string,
     payload: IChangePassword,
@@ -107,7 +161,7 @@ const changePassword = async (
     }
 
     if(isUserExists.password && !(await User.isPasswordMatched(oldPassword, isUserExists.password))) {
-        throw new ApiError("Passwrod is incorrect", httpStatus.UNAUTHORIZED);
+        throw new ApiError("Password is incorrect", httpStatus.UNAUTHORIZED);
     }
 
     const newHashedPassword = await bcrypt.hash(
@@ -128,6 +182,7 @@ const changePassword = async (
 
 export const AuthService = {
     loginUser,
+    registerUser,
     refreshToken,
     changePassword,
 };

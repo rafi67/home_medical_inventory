@@ -20,7 +20,33 @@ const loginUser: RequestHandler = catchAsync(async (req: NextRequest) => {
         message: "Login Successful",
     });
 
-    res.cookies.set('refreshToken', refreshToken, cookieOptions);
+    res.cookies.set('refreshToken', refreshToken as string, cookieOptions);
+
+    res.cookies.set('accessToken', accessToken, cookieOptions);
+
+    return res;
+});
+
+const registerUser: RequestHandler = catchAsync(async (req: NextRequest) => {
+    const { ...registerData } = await req.json();
+
+    console.log("registerData:", registerData);
+
+    const result = await AuthService.registerUser(registerData);
+
+    const { refreshToken, accessToken } = result;
+
+    const cookieOptions = {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+    };
+
+    const res = NextResponse.json({
+        secure: true,
+        message: "Register Successfull"
+    });
+
+    res.cookies.set('refreshToken', refreshToken as string, cookieOptions);
 
     res.cookies.set('accessToken', accessToken, cookieOptions);
 
@@ -44,7 +70,7 @@ const refreshToken: RequestHandler = catchAsync(async (req: NextRequest) => {
         message: "Access Token retrieved successful",
     });
 
-    res.cookies.set('refreshToken', refreshToken, cookieOptions);
+    res.cookies.set('refreshToken', refreshToken as string, cookieOptions);
 
     res.cookies.set('accessToken', accessToken, cookieOptions);
 
@@ -69,6 +95,7 @@ const changePassword: RequestHandler = catchAsync(async (req: NextRequest) => {
 
 export const AuthController = {
     loginUser,
+    registerUser,
     refreshToken,
     changePassword,
 };
