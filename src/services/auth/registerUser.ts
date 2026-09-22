@@ -80,9 +80,9 @@ export const registerUser = async (_currentState: any, formData: any): Promise<a
             
         const userRole = verifiedToken.role;
 
-        // if(!result.success) {
-        //     throw new Error(result.message || "Registration Failed");
-        // }
+        if(!result.success) {
+            throw new Error(result.message || "Registration Failed");
+        }
 
         if(redirectTo) {
             const requestedPath = redirectTo.toString();

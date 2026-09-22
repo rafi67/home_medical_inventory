@@ -30,8 +30,6 @@ const loginUser: RequestHandler = catchAsync(async (req: NextRequest) => {
 const registerUser: RequestHandler = catchAsync(async (req: NextRequest) => {
     const { ...registerData } = await req.json();
 
-    console.log("registerData:", registerData);
-
     const result = await AuthService.registerUser(registerData);
 
     const { refreshToken, accessToken } = result;
@@ -42,9 +40,9 @@ const registerUser: RequestHandler = catchAsync(async (req: NextRequest) => {
     };
 
     const res = NextResponse.json({
-        secure: true,
+        success: true,
         message: "Register Successfull"
-    });
+});
 
     res.cookies.set('refreshToken', refreshToken as string, cookieOptions);
 
