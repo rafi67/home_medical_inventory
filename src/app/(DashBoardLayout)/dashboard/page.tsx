@@ -14,6 +14,7 @@ import {
   ChevronLeft,
   Bell,
   CheckCircle2,
+  Tag,
 } from 'lucide-react'
 import { CATEGORIES, Medicine, MOCK_MEDICINES } from '@/types'
 import { Badge } from '@/components/ui/badge'
@@ -27,6 +28,7 @@ import AddMedicineModal from '@/components/AddMedicineModal'
 import { usePathname, useRouter } from 'next/navigation';
 import ProfileDropdownMenu from '@/components/ProfileDropdownMenu';
 import { serverFetch } from '@/lib/server-fetch';
+import { AddCategoryModal } from '@/components/AddCategoryModal';
 type NotificationTone = 'expired' | 'expiringSoon' | 'lowStock' | 'outOfStock'
 interface AppNotification {
   id: string
@@ -39,6 +41,19 @@ const DashboardPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [categories, setCategories] = useState<string[]>(CATEGORIES);
+  const [categoryDescriptions, setCategoryDescriptions] = useState<
+    Record<string, string>
+  >({});
+
+  const handleAddCategory = (category: string, description: string) => {
+    setCategories((prev) => [...prev, category])
+    if (description) {
+      setCategoryDescriptions((prev) => ({ ...prev, [category]: description }))
+    }
+  };
+
   const handleAddMedicine = (newMed: Omit<Medicine, 'id'>) => {
     const medicine: Medicine = {
       ...newMed,
@@ -317,13 +332,22 @@ const DashboardPage = () => {
               Manage your home medications and track expiry dates.
             </p>
           </div>
-          <Button
-            onClick={() => setIsAddModalOpen(true)}
-            className="bg-teal-600 hover:bg-teal-700 shadow-sm shadow-teal-600/20"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Medicine
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsCategoryModalOpen(true)}
+            >
+              <Tag className="w-4 h-4 mr-2" />
+              Add Category
+            </Button>
+            <Button
+              onClick={() => setIsAddModalOpen(true)}
+              className="bg-teal-600 hover:bg-teal-700 shadow-sm shadow-teal-600/20"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Medicine
+            </Button>
+          </div>
         </div>
 
         {/* Stats Grid */}
@@ -511,6 +535,13 @@ const DashboardPage = () => {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onAdd={handleAddMedicine}
+      />
+
+      <AddCategoryModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        onAdd={handleAddCategory}
+        existingCategories={categories}
       />
     </div>
   )
