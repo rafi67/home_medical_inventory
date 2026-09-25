@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useActionState, useEffect, useState } from 'react'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from './ui/dialog'
+import { addCategories } from '@/services/categories/addCategories'
 
 interface AddCategoryModalProps {
   isOpen: boolean
@@ -25,35 +26,22 @@ export function AddCategoryModal({
   onAdd,
   existingCategories,
 }: AddCategoryModalProps) {
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [error, setError] = useState('')
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [error, setError] = useState('');
+  const [state, formAction, isPending] = useActionState(addCategories, null);
 
   useEffect(() => {
-    if (!isOpen) {
-      setName('')
-      setDescription('')
-      setError('')
-    }
-  }, [isOpen])
+    const open = async () => {
+      // if (!isOpen) {
+      //   setName('')
+      //   setDescription('')
+      //   setError('')
+      // }
+    };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    const trimmed = name.trim()
-    if (!trimmed) {
-      setError('Please enter a category name.')
-      return
-    }
-    const exists = existingCategories.some(
-      (c) => c.toLowerCase() === trimmed.toLowerCase(),
-    )
-    if (exists) {
-      setError('This category already exists.')
-      return
-    }
-    onAdd(trimmed, description.trim())
-    onClose()
-  }
+    open();
+  }, [isOpen]);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -64,7 +52,7 @@ export function AddCategoryModal({
             Create a new category to organize your medicines.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 py-2" noValidate>
+        <form action={formAction} className="space-y-4 py-2" noValidate>
           <div className="space-y-2">
             <Label htmlFor="category-name">Category name</Label>
             <Input
@@ -72,6 +60,7 @@ export function AddCategoryModal({
               autoFocus
               placeholder="e.g. Kids' Medicine"
               value={name}
+              name='name'
               aria-invalid={!!error}
               aria-describedby={error ? 'category-error' : undefined}
               className={error ? 'border-destructive focus-visible:ring-destructive' : ''}
@@ -97,6 +86,7 @@ export function AddCategoryModal({
               id="category-description"
               rows={3}
               maxLength={200}
+              name='description'
               placeholder="e.g. Children's doses and fever reducers"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -110,7 +100,7 @@ export function AddCategoryModal({
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" className="bg-teal-600 hover:bg-teal-700">
+            <Button type="submit" onClick={onClose} className="bg-teal-600 hover:bg-teal-700">
               Add Category
             </Button>
           </DialogFooter>
