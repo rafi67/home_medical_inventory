@@ -14,9 +14,11 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+    const token = await tokenVerification();
+
     await connectDB();
 
     await validateRequest(MedicineValidation.createMedicineZodSchema);
 
-    return MedicineController.createMedicine(req);
+    return MedicineController.createMedicine(req, token);
 }

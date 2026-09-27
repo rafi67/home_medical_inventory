@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useEffect, useMemo, useState } from 'react'
@@ -42,7 +43,10 @@ const DashboardPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
-  const [categories, setCategories] = useState<string[]>(CATEGORIES);
+  // const [categories, setCategories] = useState<string[]>(CATEGORIES);
+  const [categories, setCategories] = useState<{
+    name: string,
+  }[]>();
   const [categoryDescriptions, setCategoryDescriptions] = useState<
     Record<string, string>
   >({});
@@ -53,6 +57,8 @@ const DashboardPage = () => {
       setCategoryDescriptions((prev) => ({ ...prev, [category]: description }))
     }
   };
+
+
 
   const handleAddMedicine = (newMed: Omit<Medicine, 'id'>) => {
     const medicine: Medicine = {
@@ -226,6 +232,10 @@ const DashboardPage = () => {
     async function fetchData() {
       const res = await serverFetch.get('/api/medicine');
       const body = await res.json();
+      const category = await serverFetch.get('/api/categories');
+      const categoryBody = await category.json();
+      setCategories(categoryBody);
+      console.log('categoryBody:', categoryBody);
       console.log(body);
       setData(body);
     }
@@ -419,14 +429,14 @@ const DashboardPage = () => {
               >
                 All
               </Button>
-              {CATEGORIES.map((cat) => (
+              {categories?.map((cat: any) => (
                 <Button
-                  key={cat}
+                  key={cat._id}
                   variant={selectedCategory === cat ? 'default' : 'secondary'}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`rounded-xl whitespace-nowrap ${selectedCategory === cat ? 'bg-slate-800 text-white hover:bg-slate-700' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
+                  onClick={() => setSelectedCategory(cat._id)}
+                  className={`rounded-xl whitespace-nowrap ${selectedCategory === cat._id ? 'bg-slate-800 text-white hover:bg-slate-700' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
                 >
-                  {cat}
+                  {cat.name}
                 </Button>
               ))}
             </div>
@@ -535,6 +545,7 @@ const DashboardPage = () => {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onAdd={handleAddMedicine}
+        categories={categories}
       />
 
       <AddCategoryModal

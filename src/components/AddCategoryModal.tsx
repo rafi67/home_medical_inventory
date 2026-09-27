@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import React, { useActionState, useEffect, useState } from 'react'
 import { Button } from './ui/button'
@@ -14,10 +15,10 @@ import {
 import { addCategories } from '@/services/categories/addCategories'
 
 interface AddCategoryModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onAdd: (category: string, description: string) => void
-  existingCategories: string[]
+  isOpen: boolean;
+  onClose: () => void;
+  onAdd: (category: string, description: string) => void;
+  existingCategories: any;
 }
 
 export function AddCategoryModal({

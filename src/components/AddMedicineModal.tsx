@@ -1,30 +1,34 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { CATEGORIES, Medicine } from "@/types";
+import { Medicine } from "@/types";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
-import { useActionState, useEffect, useState } from "react";
-import { loginUser } from "@/services/auth/loginUser";
+import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
+import { addMedicines } from "@/services/medicines/addMedicine";
 
 interface AddMedicineModalProps {
-    isOpen: boolean
-    onClose: () => void
-    onAdd: (medicine: Omit<Medicine, 'id'>) => void
+    isOpen: boolean;
+    onClose: () => void;
+    onAdd: (medicine: Omit<Medicine, 'id'>) => void;
+    categories: any;
 }
 
-const AddMedicineModal = ({ isOpen, onClose, onAdd }: AddMedicineModalProps) => {
+const AddMedicineModal = ({ isOpen, onClose, onAdd, categories }: AddMedicineModalProps) => {
 
-    const [state, formAction, isPending] = useActionState(loginUser, null);
+    const [state, formAction, isPending] = useActionState(addMedicines, null);
 
     useEffect(() => {
         if (state && !state.success && state.message) {
             toast.error(state.message);
+        } else if(state && state.success) {
+            toast.success('Added Successfully!');
+            onClose();
         }
-    }, [state]);
-
+    }, [state, onClose]);
 
 
     return (
@@ -39,6 +43,7 @@ const AddMedicineModal = ({ isOpen, onClose, onAdd }: AddMedicineModalProps) => 
                         <Input
                             id="name"
                             required
+                            name="name"
                             placeholder="e.g. Ibuprofen"
                         />
                     </div>
@@ -48,6 +53,7 @@ const AddMedicineModal = ({ isOpen, onClose, onAdd }: AddMedicineModalProps) => 
                             <Label htmlFor="dosage">Dosage</Label>
                             <Input
                                 id="dosage"
+                                name="dosage"
                                 placeholder="e.g. 200mg"
                             />
                         </div>
@@ -56,10 +62,11 @@ const AddMedicineModal = ({ isOpen, onClose, onAdd }: AddMedicineModalProps) => 
                             <select
                                 id="category"
                                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                name="category"
                             >
-                                {CATEGORIES.map((cat) => (
-                                    <option key={cat} value={cat}>
-                                        {cat}
+                                {categories?.map((cat: any) => (
+                                    <option key={cat._id} value={cat._id}>
+                                        {cat.name}
                                     </option>
                                 ))}
                             </select>
@@ -74,12 +81,14 @@ const AddMedicineModal = ({ isOpen, onClose, onAdd }: AddMedicineModalProps) => 
                                 required
                                 type="number"
                                 min="0"
+                                name="quantity"
                             />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="unit">Unit</Label>
                             <select
                                 id="unit"
+                                name="unit"
                                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                             >
                                 <option value="tablets">Tablets</option>
@@ -96,6 +105,7 @@ const AddMedicineModal = ({ isOpen, onClose, onAdd }: AddMedicineModalProps) => 
                         <Label htmlFor="expiryDate">Expiry Date *</Label>
                         <Input
                             id="expiryDate"
+                            name="expiryDate"
                             required
                             type="date"
                         />
@@ -105,6 +115,7 @@ const AddMedicineModal = ({ isOpen, onClose, onAdd }: AddMedicineModalProps) => 
                         <Label htmlFor="notes">Notes (Optional)</Label>
                         <textarea
                             id="notes"
+                            name="notes"
                             className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
                             placeholder="e.g. Take with food"
                         />

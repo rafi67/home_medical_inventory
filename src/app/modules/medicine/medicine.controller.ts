@@ -21,8 +21,12 @@ const getMedicinesById = catchAsync(async (_req: NextRequest, id: string) => {
     return NextResponse.json(result);
 });
 
-const createMedicine = catchAsync(async (req: NextRequest) => {
+const createMedicine = catchAsync(async (req: NextRequest, token: string) => {
+    const verifiedToken: JwtPayload | string = jwtHelpers.verifyToken(token, process.env.JWT_SECRET as string);
+
     const body = await req.json() as IMedicine;
+
+    body.userId = verifiedToken.id;
 
     const result = await MedicineService.createMedicine(body);
 
