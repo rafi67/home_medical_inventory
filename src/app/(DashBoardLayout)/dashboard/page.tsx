@@ -17,7 +17,7 @@ import {
   CheckCircle2,
   Tag,
 } from 'lucide-react'
-import { CATEGORIES, Medicine, MOCK_MEDICINES } from '@/types'
+import { Category, Medicine } from '@/types'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -30,6 +30,8 @@ import { usePathname, useRouter } from 'next/navigation';
 import ProfileDropdownMenu from '@/components/ProfileDropdownMenu';
 import { serverFetch } from '@/lib/server-fetch';
 import { AddCategoryModal } from '@/components/AddCategoryModal';
+import { expiredOrExpiringMedicine, lowStock } from '@/lib/utils';
+import EditMedicineModal from '@/components/EditiMedicineModal';
 type NotificationTone = 'expired' | 'expiringSoon' | 'lowStock' | 'outOfStock'
 interface AppNotification {
   id: string
@@ -38,72 +40,74 @@ interface AppNotification {
   description: string
 }
 const DashboardPage = () => {
-  const [medicines, setMedicines] = useState<Medicine[]>(MOCK_MEDICINES);
+  const [medicines, setMedicines] = useState<Medicine[]>();
+  const [selectedMed, setSelectedMed] = useState<any>();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   // const [categories, setCategories] = useState<string[]>(CATEGORIES);
-  const [categories, setCategories] = useState<{
-    name: string,
-  }[]>();
-  const [categoryDescriptions, setCategoryDescriptions] = useState<
-    Record<string, string>
-  >({});
+  const [categories, setCategories] = useState<Category[]>();
+  // const [categoryDescriptions, setCategoryDescriptions] = useState<
+  //   Record<string, string>
+  // >({});
 
-  const handleAddCategory = (category: string, description: string) => {
-    setCategories((prev) => [...prev, category])
-    if (description) {
-      setCategoryDescriptions((prev) => ({ ...prev, [category]: description }))
-    }
-  };
+  // const length = 10;
+
+  // const handleAddCategory = (category: string, description: string) => {
+  //   setCategories((prev) => [...prev, category])
+  //   if (description) {
+  //     setCategoryDescriptions((prev) => ({ ...prev, [category]: description }))
+  //   }
+  // };
 
 
 
-  const handleAddMedicine = (newMed: Omit<Medicine, 'id'>) => {
-    const medicine: Medicine = {
-      ...newMed,
-      id: Math.random().toString(36).substr(2, 9),
-    }
-    setMedicines([medicine, ...medicines])
-  }
-  const handleDelete = (id: string) => {
-    setMedicines(medicines.filter((m) => m.id !== id))
-  }
-  const filteredMedicines = useMemo(() => {
-    return medicines.filter((med) => {
-      const matchesSearch =
-        med.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        med.category.toLowerCase().includes(searchQuery.toLowerCase())
-      const matchesCategory =
-        selectedCategory === 'All' || med.category === selectedCategory
-      return matchesSearch && matchesCategory
-    })
-  }, [medicines, searchQuery, selectedCategory]);
+  // const handleAddMedicine = (newMed: Omit<Medicine, 'id'>) => {
+  //   const medicine: Medicine = {
+  //     ...newMed,
+  //     id: Math.random().toString(36).substr(2, 9),
+  //   }
+  //   setMedicines([medicine, ...medicines])
+  // }
+  // const handleDelete = (id: string) => {
+  //   setMedicines(medicines.filter((m) => m.id !== id))
+  // }
+  // const filteredMedicines = useMemo(() => {
+  //   return medicines.filter((med) => {
+  //     const matchesSearch =
+  //       med.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //       med.category.toLowerCase().includes(searchQuery.toLowerCase())
+  //     const matchesCategory =
+  //       selectedCategory === 'All' || med.category === selectedCategory
+  //     return matchesSearch && matchesCategory
+  //   })
+  // }, [medicines, searchQuery, selectedCategory]);
 
-  const stats = useMemo(() => {
-    const now = new Date()
-    const thirtyDaysFromNow = new Date()
-    thirtyDaysFromNow.setDate(now.getDate() + 30)
-    return {
-      total: medicines.length,
-      lowStock: medicines.filter((m) => m.quantity > 0 && m.quantity <= 10)
-        .length,
-      outOfStock: medicines.filter((m) => m.quantity === 0).length,
-      expiringSoon: medicines.filter((m) => {
-        const expDate = new Date(m.expiryDate)
-        return expDate > now && expDate <= thirtyDaysFromNow
-      }).length,
-      expired: medicines.filter((m) => new Date(m.expiryDate) < now).length,
-    }
-  }, [medicines]);
+  // const stats = useMemo(() => {
+  //   const now = new Date()
+  //   const thirtyDaysFromNow = new Date()
+  //   thirtyDaysFromNow.setDate(now.getDate() + 30)
+  //   return {
+  //     total: medicines.length,
+  //     lowStock: medicines.filter((m) => m.quantity > 0 && m.quantity <= 10)
+  //       .length,
+  //     outOfStock: medicines.filter((m) => m.quantity === 0).length,
+  //     expiringSoon: medicines.filter((m) => {
+  //       const expDate = new Date(m.expiryDate)
+  //       return expDate > now && expDate <= thirtyDaysFromNow
+  //     }).length,
+  //     expired: medicines.filter((m) => new Date(m.expiryDate) < now).length,
+  //   }
+  // }, [medicines]);
 
   const notifications = useMemo<AppNotification[]>(() => {
-    const now = new Date()
-    const thirtyDaysFromNow = new Date()
-    thirtyDaysFromNow.setDate(now.getDate() + 30)
-    const items: AppNotification[] = []
-    medicines.forEach((med) => {
+    const now = new Date();
+    const thirtyDaysFromNow = new Date();
+    thirtyDaysFromNow.setDate(now.getDate() + 30);
+    const items: AppNotification[] = [];
+    medicines?.forEach((med) => {
       const expDate = new Date(med.expiryDate)
       if (expDate < now) {
         items.push({
@@ -128,19 +132,19 @@ const DashboardPage = () => {
           })}.`,
         })
       }
-      if (med.quantity === 0) {
+      if (med.currentQuantity === 0) {
         items.push({
           id: `out-${med.id}`,
           tone: 'outOfStock',
           title: `${med.name} is out of stock`,
           description: 'Restock to keep this on hand.',
         })
-      } else if (med.quantity <= 10) {
+      } else if (lowStock(med.fixedQuantity, med.currentQuantity)) {
         items.push({
           id: `low-${med.id}`,
           tone: 'lowStock',
           title: `${med.name} is running low`,
-          description: `Only ${med.quantity} ${med.unit} left.`,
+          description: `Only ${med.currentQuantity} ${med.unit} left.`,
         })
       }
     })
@@ -179,9 +183,9 @@ const DashboardPage = () => {
   };
 
   const getStatusBadge = (med: Medicine) => {
-    const expDate = new Date(med.expiryDate)
-    const now = new Date()
-    if (expDate < now) {
+    const isExpired = expiredOrExpiringMedicine(med.expiryDate);
+    console.log('is expired:', isExpired);
+    if (isExpired === 1) {
       return (
         <Badge
           variant="destructive"
@@ -191,7 +195,7 @@ const DashboardPage = () => {
         </Badge>
       )
     }
-    if (med.quantity === 0) {
+    if (med.currentQuantity === 0) {
       return (
         <Badge
           variant="secondary"
@@ -201,7 +205,7 @@ const DashboardPage = () => {
         </Badge>
       )
     }
-    if (med.quantity <= 10) {
+    if (lowStock(med.fixedQuantity, med.currentQuantity)) {
       return (
         <Badge
           variant="outline"
@@ -234,6 +238,7 @@ const DashboardPage = () => {
       const body = await res.json();
       const category = await serverFetch.get('/api/categories');
       const categoryBody = await category.json();
+      setMedicines(body?.data);
       setCategories(categoryBody);
       console.log('categoryBody:', categoryBody);
       console.log(body);
@@ -458,7 +463,7 @@ const DashboardPage = () => {
             </TableHeader>
             <TableBody>
               <AnimatePresence>
-                {filteredMedicines.length === 0 ? (
+                {medicines?.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="h-32 text-center">
                       <div className="flex flex-col items-center justify-center text-muted-foreground">
@@ -467,8 +472,9 @@ const DashboardPage = () => {
                       </div>
                     </TableCell>
                   </TableRow>
-                ) : (
-                  filteredMedicines.map((med) => (
+                ) :
+                (
+                  medicines?.map((med: any) => (
                     <TableRow key={med.id} className="group">
                       <TableCell>
                         <div className="flex items-center gap-3">
@@ -477,25 +483,25 @@ const DashboardPage = () => {
                           </div>
                           <div>
                             <div className="font-medium text-foreground">
-                              {med.name}
+                              {med?.name}
                             </div>
                             <div className="text-sm text-muted-foreground">
-                              {med.dosage}
+                              {med?.dosage}
                             </div>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <Badge variant="secondary" className="font-normal">
-                          {med.category}
+                          {med?.category?.name}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="font-medium text-foreground">
-                          {med.quantity}
+                          {med?.currentQuantity}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {med.unit}
+                          {med?.unit}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -524,8 +530,17 @@ const DashboardPage = () => {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
+                              className="text-yellow-500 focus:text-yellow-500 focus:bg-yellow-200 cursor-pointer"
+                              onClick={() => {
+                                setIsEditModalOpen(true);
+                                setSelectedMed(med);
+                              }}
+                            >
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
                               className="text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer"
-                              onClick={() => handleDelete(med.id)}
+                              onClick={() => () => -1}
                             >
                               Delete
                             </DropdownMenuItem>
@@ -544,14 +559,20 @@ const DashboardPage = () => {
       <AddMedicineModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onAdd={handleAddMedicine}
         categories={categories}
+      />
+
+      <EditMedicineModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        categories={categories}
+        medicine={selectedMed}
       />
 
       <AddCategoryModal
         isOpen={isCategoryModalOpen}
         onClose={() => setIsCategoryModalOpen(false)}
-        onAdd={handleAddCategory}
+        onAdd={() => -1}
         existingCategories={categories}
       />
     </div>

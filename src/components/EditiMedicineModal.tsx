@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Medicine } from "@/types";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -9,21 +8,23 @@ import { Button } from "./ui/button";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 import { addMedicines } from "@/services/medicines/addMedicine";
+import { Medicine } from "@/types";
 
 interface AddMedicineModalProps {
     isOpen: boolean;
     onClose: () => void;
     categories: any;
+    medicine: Medicine;
 }
 
-const AddMedicineModal = ({ isOpen, onClose, categories }: AddMedicineModalProps) => {
+const EditMedicineModal = ({ isOpen, onClose, categories, medicine }: AddMedicineModalProps) => {
 
     const [state, formAction, isPending] = useActionState(addMedicines, null);
 
     useEffect(() => {
         if (state && !state.success && state.message) {
             toast.error(state.message);
-        } else if(state && state.success) {
+        } else if (state && state.success) {
             toast.success('Added Successfully!');
             onClose();
         }
@@ -37,6 +38,13 @@ const AddMedicineModal = ({ isOpen, onClose, categories }: AddMedicineModalProps
                     <DialogTitle>Add Medicine</DialogTitle>
                 </DialogHeader>
                 <form action={formAction} className="space-y-4 py-4">
+                    <Input
+                        id="_id"
+                        required
+                        name="_id"
+                        type="hidden"
+                        defaultValue={medicine?._id}
+                    />
                     <div className="space-y-2">
                         <Label htmlFor="name">Medicine Name *</Label>
                         <Input
@@ -44,6 +52,7 @@ const AddMedicineModal = ({ isOpen, onClose, categories }: AddMedicineModalProps
                             required
                             name="name"
                             placeholder="e.g. Ibuprofen"
+                            defaultValue={medicine?.name}
                         />
                     </div>
 
@@ -54,6 +63,7 @@ const AddMedicineModal = ({ isOpen, onClose, categories }: AddMedicineModalProps
                                 id="dosage"
                                 name="dosage"
                                 placeholder="e.g. 200mg"
+                                defaultValue={medicine?.dosage}
                             />
                         </div>
                         <div className="space-y-2">
@@ -62,6 +72,7 @@ const AddMedicineModal = ({ isOpen, onClose, categories }: AddMedicineModalProps
                                 id="category"
                                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                 name="category"
+                                defaultValue={medicine?.category?._id}
                             >
                                 {categories?.map((cat: any) => (
                                     <option key={cat._id} value={cat._id}>
@@ -80,7 +91,15 @@ const AddMedicineModal = ({ isOpen, onClose, categories }: AddMedicineModalProps
                                 required
                                 type="number"
                                 min="0"
-                                name="quantity"
+                                name="currentQuantity"
+                                defaultValue={medicine?.currentQuantity}
+                            />
+                            <Input
+                                id="fixedQuantity"
+                                required
+                                name="fixedQuantity"
+                                type="hidden"
+                                defaultValue={medicine?.fixedQuantity}
                             />
                         </div>
                         <div className="space-y-2">
@@ -89,6 +108,7 @@ const AddMedicineModal = ({ isOpen, onClose, categories }: AddMedicineModalProps
                                 id="unit"
                                 name="unit"
                                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                defaultValue={medicine?.unit}
                             >
                                 <option value="tablets">Tablets</option>
                                 <option value="capsules">Capsules</option>
@@ -107,6 +127,7 @@ const AddMedicineModal = ({ isOpen, onClose, categories }: AddMedicineModalProps
                             name="expiryDate"
                             required
                             type="date"
+                            defaultValue={medicine?.expiryDate.toString()}
                         />
                     </div>
 
@@ -117,8 +138,17 @@ const AddMedicineModal = ({ isOpen, onClose, categories }: AddMedicineModalProps
                             name="notes"
                             className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
                             placeholder="e.g. Take with food"
+                            defaultValue={medicine?.notes}
                         />
                     </div>
+
+                    <Input
+                        id="userId"
+                        required
+                        name="userId"
+                        type="hidden"
+                        defaultValue={medicine?.userId}
+                    />
 
                     <DialogFooter>
                         <Button type="button" variant="outline" onClick={onClose}>
@@ -134,4 +164,4 @@ const AddMedicineModal = ({ isOpen, onClose, categories }: AddMedicineModalProps
     );
 };
 
-export default AddMedicineModal;
+export default EditMedicineModal;
