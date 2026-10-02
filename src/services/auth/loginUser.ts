@@ -27,7 +27,6 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
             return validatedPayload;
         }
 
-        console.log('validated payload:', validatedPayload.data);
 
         const res = await serverFetch.post("/api/auth/login", {
             body: JSON.stringify(validatedPayload.data),
@@ -38,7 +37,6 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
 
         const result = await res.json();
 
-        console.log('response:', res);
 
         const setCookieHeaders = res.headers.getSetCookie();
 
@@ -103,7 +101,6 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
         if(err?.digest?.startsWith('NEXT_REDIRECT')) {
             throw err;
         }
-        console.log(err);
 
         return {
             success: false,
