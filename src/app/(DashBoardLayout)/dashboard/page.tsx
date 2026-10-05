@@ -184,7 +184,6 @@ const DashboardPage = () => {
 
   const getStatusBadge = (med: Medicine) => {
     const isExpired = expiredOrExpiringMedicine(med.expiryDate);
-    console.log('is expired:', isExpired);
     if (isExpired === 1) {
       return (
         <Badge
@@ -240,8 +239,6 @@ const DashboardPage = () => {
       const categoryBody = await category.json();
       setMedicines(body?.data);
       setCategories(categoryBody);
-      console.log('categoryBody:', categoryBody);
-      console.log(body);
       setData(body);
     }
 

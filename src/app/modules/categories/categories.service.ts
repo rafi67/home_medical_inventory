@@ -8,7 +8,6 @@ const getAllCategories = async () => {
 };
 
 const createCategory = async (payload: Partial<ICategory>) => {
-    console.log('payload in services:', payload);
     const result = await Categories.create(payload);
     return result;
 };

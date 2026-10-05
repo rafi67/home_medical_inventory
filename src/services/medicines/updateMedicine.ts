@@ -3,32 +3,32 @@
 
 import { serverFetch } from "@/lib/server-fetch";
 import { zodValidator } from "@/lib/zodValidator";
-import { addMedicineValidationZodSchema } from "@/zod/medicines.validation";
+import { updateMedicineValidationZodSchema } from "@/zod/medicines.validation";
 
-export const addMedicines = async (_currentState: any, formData: any): Promise<any> => {
+export const updateMedicines = async (_currentState: any, formData: any): Promise<any> => {
     try{
 
         const payload = {
+            _id: formData.get('_id'),
             name: formData.get('name'),
             dosage: formData.get('dosage'),
             category: formData.get('category'),
-            fixedQuantity: Number(formData.get('quantity')),
-            currentQuantity: Number(formData.get('quantity')),
+            fixedQuantity: Number(formData.get('fixedQuantity')),
+            currentQuantity: Number(formData.get('currentQuantity')),
             unit: formData.get('unit'),
             expiryDate: new Date(formData.get('expiryDate')),
             notes: formData.get('notes'),
+            userId: formData.get('userId'),
         };
 
-
-
-        const validatedPayload = zodValidator(payload, addMedicineValidationZodSchema);
+        const validatedPayload = zodValidator(payload, updateMedicineValidationZodSchema);
 
 
         if(!validatedPayload.success) {
             return validatedPayload;
         }
 
-        await serverFetch.post("/api/medicine", {
+        await serverFetch.patch(`/api/medicine/${payload._id}`, {
             body: JSON.stringify(validatedPayload.data),
             headers: {
                 "Content-Type": "application/json",

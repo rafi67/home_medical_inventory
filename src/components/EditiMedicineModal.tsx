@@ -7,8 +7,8 @@ import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import { addMedicines } from "@/services/medicines/addMedicine";
 import { Medicine } from "@/types";
+import { updateMedicines } from "@/services/medicines/updateMedicine";
 
 interface AddMedicineModalProps {
     isOpen: boolean;
@@ -19,7 +19,14 @@ interface AddMedicineModalProps {
 
 const EditMedicineModal = ({ isOpen, onClose, categories, medicine }: AddMedicineModalProps) => {
 
-    const [state, formAction, isPending] = useActionState(addMedicines, null);
+    const [state, formAction, isPending] = useActionState(updateMedicines, null);
+    const dateObj = new Date(medicine?.expiryDate);
+
+    const mm = String(dateObj.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const dd = String(dateObj.getDate()).padStart(2, '0');
+    const yyyy = dateObj.getFullYear();
+
+    const formattedDate = `${yyyy}-${mm}-${dd}`;
 
     useEffect(() => {
         if (state && !state.success && state.message) {
@@ -35,7 +42,7 @@ const EditMedicineModal = ({ isOpen, onClose, categories, medicine }: AddMedicin
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Add Medicine</DialogTitle>
+                    <DialogTitle>Update Medicine</DialogTitle>
                 </DialogHeader>
                 <form action={formAction} className="space-y-4 py-4">
                     <Input
@@ -85,23 +92,28 @@ const EditMedicineModal = ({ isOpen, onClose, categories, medicine }: AddMedicin
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label htmlFor="quantity">Quantity *</Label>
+                            <Label htmlFor="quantity">Current Quantity *</Label>
                             <Input
                                 id="quantity"
                                 required
-                                type="number"
                                 min="0"
                                 name="currentQuantity"
                                 defaultValue={medicine?.currentQuantity}
                             />
-                            <Input
-                                id="fixedQuantity"
+                        </div>
+                       <div className="space-y-2">
+                            <Label htmlFor="quantity">Fixed Quantity *</Label>
+                             <Input
+                                id="quantity"
                                 required
+                                min="0"
                                 name="fixedQuantity"
-                                type="hidden"
                                 defaultValue={medicine?.fixedQuantity}
                             />
                         </div>
+                    </div>
+
+                     <div className="grid grid-cols-1 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="unit">Unit</Label>
                             <select
@@ -127,7 +139,7 @@ const EditMedicineModal = ({ isOpen, onClose, categories, medicine }: AddMedicin
                             name="expiryDate"
                             required
                             type="date"
-                            defaultValue={medicine?.expiryDate.toString()}
+                            defaultValue={formattedDate}
                         />
                     </div>
 
@@ -155,7 +167,7 @@ const EditMedicineModal = ({ isOpen, onClose, categories, medicine }: AddMedicin
                             Cancel
                         </Button>
                         <Button type="submit" className="bg-teal-600 hover:bg-teal-700">
-                            Add Medicine
+                            Update
                         </Button>
                     </DialogFooter>
                 </form>

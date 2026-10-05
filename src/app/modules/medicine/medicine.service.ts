@@ -60,7 +60,7 @@ const createMedicine = async (payload: IMedicine) => {
 
 const updateMedicine = async (id: string, payload: IMedicine) => {
     const result = await Medicine.findOneAndUpdate(
-        { id },
+        { _id: id },
         { $set: payload },
         { returnDocument: 'after' },
     ).populate('category');

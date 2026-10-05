@@ -15,6 +15,7 @@ const createMedicineZodSchema = z.object({
 
 const updateMedicineZodSchema = z.object({
     body: z.object({
+        _id: z.string().optional(),
         name: z.string().optional(),
         dosage: z.string().optional,
         fixedQuantity: z.number().optional,
@@ -22,6 +23,7 @@ const updateMedicineZodSchema = z.object({
         unit: z.string().optional(),
         expiryDate: z.date().optional(),
         notes: string().optional(),
+        userId: string().optional(),
     }),
 });
 

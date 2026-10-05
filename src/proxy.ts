@@ -26,7 +26,6 @@ export async function proxy(request: NextRequest) {
     }
 
     if((pathname === '/register' || pathname ==='/login') && !accessToken) {
-      console.log('condition is true');
       return NextResponse.next();
     }
 

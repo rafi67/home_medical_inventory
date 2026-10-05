@@ -100,7 +100,6 @@ export const registerUser = async (_currentState: any, formData: any): Promise<a
         if(err?.digest?.startsWith('NEXT_REDIRECT')) {
             throw err;
         }
-        console.log(err);
 
         return {
             success: false,
