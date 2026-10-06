@@ -47,60 +47,7 @@ const DashboardPage = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
-  // const [categories, setCategories] = useState<string[]>(CATEGORIES);
   const [categories, setCategories] = useState<Category[]>();
-  // const [categoryDescriptions, setCategoryDescriptions] = useState<
-  //   Record<string, string>
-  // >({});
-
-  // const length = 10;
-
-  // const handleAddCategory = (category: string, description: string) => {
-  //   setCategories((prev) => [...prev, category])
-  //   if (description) {
-  //     setCategoryDescriptions((prev) => ({ ...prev, [category]: description }))
-  //   }
-  // };
-
-
-
-  // const handleAddMedicine = (newMed: Omit<Medicine, 'id'>) => {
-  //   const medicine: Medicine = {
-  //     ...newMed,
-  //     id: Math.random().toString(36).substr(2, 9),
-  //   }
-  //   setMedicines([medicine, ...medicines])
-  // }
-  // const handleDelete = (id: string) => {
-  //   setMedicines(medicines.filter((m) => m.id !== id))
-  // }
-  // const filteredMedicines = useMemo(() => {
-  //   return medicines.filter((med) => {
-  //     const matchesSearch =
-  //       med.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //       med.category.toLowerCase().includes(searchQuery.toLowerCase())
-  //     const matchesCategory =
-  //       selectedCategory === 'All' || med.category === selectedCategory
-  //     return matchesSearch && matchesCategory
-  //   })
-  // }, [medicines, searchQuery, selectedCategory]);
-
-  // const stats = useMemo(() => {
-  //   const now = new Date()
-  //   const thirtyDaysFromNow = new Date()
-  //   thirtyDaysFromNow.setDate(now.getDate() + 30)
-  //   return {
-  //     total: medicines.length,
-  //     lowStock: medicines.filter((m) => m.quantity > 0 && m.quantity <= 10)
-  //       .length,
-  //     outOfStock: medicines.filter((m) => m.quantity === 0).length,
-  //     expiringSoon: medicines.filter((m) => {
-  //       const expDate = new Date(m.expiryDate)
-  //       return expDate > now && expDate <= thirtyDaysFromNow
-  //     }).length,
-  //     expired: medicines.filter((m) => new Date(m.expiryDate) < now).length,
-  //   }
-  // }, [medicines]);
 
   const notifications = useMemo<AppNotification[]>(() => {
     const now = new Date();
@@ -228,6 +175,10 @@ const DashboardPage = () => {
   const pathname = usePathname();
 
   const [data, setData] = useState(null);
+
+  const handleDelete = (id: string) => {
+    serverFetch.delete(`/api/medicine/${id}`);
+  };
 
   useEffect(() => {
     router.replace(pathname);
@@ -537,7 +488,7 @@ const DashboardPage = () => {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               className="text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer"
-                              onClick={() => () => -1}
+                              onClick={() => handleDelete(med?._id)}
                             >
                               Delete
                             </DropdownMenuItem>

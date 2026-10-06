@@ -70,7 +70,7 @@ const updateMedicine = async (id: string, payload: IMedicine) => {
 
 
 const deleteMedicine = async(id: string) => {
-    const result = await Medicine.deleteOne({ id });
+    const result = await Medicine.deleteOne({ _id: id });
 
     return result;
 }

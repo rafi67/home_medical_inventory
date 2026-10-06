@@ -22,15 +22,3 @@ export async function POST(req: NextRequest) {
 
     return MedicineController.createMedicine(req, token);
 }
-
-// export async function Patch(req: NextRequest, params: Promise<{ id: string }>) {
-//     const token = await tokenVerification();
-
-//     await connectDB();
-
-//     const {id} = await params;
-
-//     await validateRequest(MedicineValidation.updateMedicineZodSchema);
-
-//     return MedicineController.updateMedicine(req, id);
-// }
