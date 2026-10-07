@@ -30,7 +30,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import ProfileDropdownMenu from '@/components/ProfileDropdownMenu';
 import { serverFetch } from '@/lib/server-fetch';
 import { AddCategoryModal } from '@/components/AddCategoryModal';
-import { expiredOrExpiringMedicine, lowStock } from '@/lib/utils';
+import { lowStock } from '@/lib/utils';
 import EditMedicineModal from '@/components/EditiMedicineModal';
 type NotificationTone = 'expired' | 'expiringSoon' | 'lowStock' | 'outOfStock'
 interface AppNotification {
@@ -55,7 +55,7 @@ const DashboardPage = () => {
     thirtyDaysFromNow.setDate(now.getDate() + 30);
     const items: AppNotification[] = [];
     medicines?.forEach((med) => {
-      const expDate = new Date(med.expiryDate)
+      const expDate = new Date(med.expiryDate);
       if (expDate < now) {
         items.push({
           id: `expired-${med.id}`,
@@ -130,8 +130,9 @@ const DashboardPage = () => {
   };
 
   const getStatusBadge = (med: Medicine) => {
-    const isExpired = expiredOrExpiringMedicine(med.expiryDate);
-    if (isExpired === 1) {
+    const expiryDate = new Date(med.expiryDate);
+    const now = new Date();
+    if (expiryDate === now || now > expiryDate) {
       return (
         <Badge
           variant="destructive"
